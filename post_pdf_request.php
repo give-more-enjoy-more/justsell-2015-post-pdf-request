@@ -11,6 +11,7 @@ Author: Joe Gilbert
 Version: 0.4
 */
 
+
 /*
  * Simply returns the pdf request input form when called.
  */
@@ -57,7 +58,7 @@ function process_post_pdf_resquest_form()
 	$pdf_request_email = isset($_POST["postPdfRequestEmail"]) ? $_POST["postPdfRequestEmail"] : '';
 	$post_id = get_the_ID();
 	$pdf_url = '';
-	$server_pdf_directory = '/var/www/html/justsell.com/wp-content/themese/justsell/resources/docs/pdfs/';
+	$server_pdf_directory = '/var/www/html/justsell.com/wp-content/themes/justsell/resources/docs/pdfs/';
 
 	/* Clean email address */
 	if(strlen($pdf_request_email) <= 0){
@@ -85,12 +86,15 @@ function process_post_pdf_resquest_form()
 	else
 	{
 		switch($post_id):
+		
 			case 5:
 				$pdf_url = $server_pdf_directory . 'the-8-objections.pdf';
 				break;
+
 			default:
 				return '<p class="form-error">I\'m so sorry, a PDF was not found for this article. Please let us know at <a href="mailto:GoodThings@GiveMore.com">GoodThings@GiveMore.com</a></p>';
 				break;
+
 		endswitch;
 
 		/* Pass all post specific variables to the send_post_pdf function. */
@@ -448,7 +452,6 @@ We\'re real people here and we\'d love to help you. Really.
 	; /* [ END of message creation ] */
 	
 
-	
 	/* [ Send the message ] */
 	$sent = $mailer->send($message, $failures);
 	
@@ -457,7 +460,7 @@ We\'re real people here and we\'d love to help you. Really.
 	if($sent){
 
 		/* [ Calls the capture email function ] */
-//		capture_meeting_pdf_email($meetingPDFContactEmail);
+		process_capture($captured_email, null, 'post-pdf-request'); /* process_capture is in global functions file */
 
 		return "<h2>Congrats, you just got motivated to the nth degree. Check your inbox! The pdf for $post_name have just arrived!</h2>";
 		
