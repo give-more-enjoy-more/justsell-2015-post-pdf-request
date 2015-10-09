@@ -1,15 +1,19 @@
 <?php
 /**
  * @package Post_PDF_Request
- * @version 0.4
+ * @version 0.5
  */
 
 /*
 Plugin Name: Post PDF Request
 Description: Uses the shortcode [postpdfrequest]
 Author: Joe Gilbert
-Version: 0.4
+Version: 0.5
 */
+
+
+/* Pull in the generic global functions needed for this script. */
+require_once('/var/www/html/justsell.com/wp-content/themes/justsell/resources/includes/global-functions.php');
 
 
 /*
@@ -22,11 +26,17 @@ function display_post_pdf_resquest_form()
 
 	/* Build the form and set it to the form_string variable. */
 	$form_output_string = '
-		<h3>Please enter your email below to get the '. $post_title_test .' printable PDF</h3>
-		<form action="'. $_SERVER['REQUEST_URI'] .'" method="post" name="pdfFormReqest" id="pdf-form-request">
-			<input name="postPdfRequestEmail" type="text" placeholder="Enter your email here">
-			<input name="postPdfRequestSubmit" type="submit" value="Submit">
-		</form>';
+		<section class="post-pdf-request">
+			<div class="post-pdf-request-form-container">
+				<h3 class="title">Make yourself (and the people around you) better.</h3>
+				<p class="subtitle">Get a PDF version of this content to print out or share.</p>
+				<form action="'. $_SERVER['REQUEST_URI'] .'" method="post" name="pdfFormReqest" class="single-input-form" id="pdf-form-request">
+					<input name="postPdfRequestEmail" type="text" placeholder="Enter your email here">
+					<input name="postPdfRequestSubmit" type="submit" value="Get the PDF">
+				</form>
+			</div>
+		</section>
+	';
 
 	return $form_output_string;
 } /* END function display_post_pdf_resquest_form */
@@ -58,7 +68,7 @@ function process_post_pdf_resquest_form()
 	$pdf_request_email = isset($_POST["postPdfRequestEmail"]) ? $_POST["postPdfRequestEmail"] : '';
 	$post_id = get_the_ID();
 	$pdf_url = '';
-	$server_pdf_directory = '/var/www/html/justsell.com/wp-content/themes/justsell/resources/docs/pdfs/';
+	$server_pdf_directory = 'http://dev.justsell.com/wp-content/themes/justsell/resources/pdfs/in-post/monthly-calendars/';
 
 	/* Clean email address */
 	if(strlen($pdf_request_email) <= 0){
@@ -88,7 +98,7 @@ function process_post_pdf_resquest_form()
 		switch($post_id):
 		
 			case 5:
-				$pdf_url = $server_pdf_directory . 'the-8-objections.pdf';
+				$pdf_url = $server_pdf_directory . '2015-december.pdf';
 				break;
 
 			default:
@@ -103,6 +113,7 @@ function process_post_pdf_resquest_form()
 } /* END function process_post_pdf_resquest_form */
 
 
+
 /*
  * Sends the actual email with pdf attached.
  * @argument $pdf_url initiated in process_post_pdf_request_form() and sent via function call.
@@ -111,7 +122,8 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 {
 	/* Initialize variables */
 	$post_permalink = get_permalink();
-	$post_name = get_the_title() . ' from JustSell.com';
+	$post_name = get_the_title();
+	$subject_line = $post_name . ' from JustSell.com';
 
 	/* [ Imports the necessary scripts to control MIME being sent. Use 'find . -name swift_required.php' to find location via ssh ] */
 	require_once '/etc/apache2/sites-available/vendor/swiftmailer/swiftmailer/lib/swift_required.php';
@@ -123,7 +135,7 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 	$mailer = Swift_Mailer::newInstance($transport);
 	
 	/* [ Create the message ] */
-	$message = Swift_Message::newInstance('How To Run Better Meetings Guide')
+	$message = Swift_Message::newInstance($subject_line)
 	  ->setFrom(array('JustSell@JustSell.com' => 'JustSell.com'))
 	  ->setTo(array($pdf_request_email))
 //				->setBcc(array('jim@givemore.com', 'sam@givemore.com'))
@@ -134,7 +146,6 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 			<html xmlns="http://www.w3.org/1999/xhtml">
 			<head>
 				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-				<title>inspiring posters & mini-posters</title>
 			</head>
 
 			<body style="background:#F2F2F2; padding:0; margin:0;">
@@ -149,23 +160,27 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 					<table width="750" border="0" cellspacing="0" bgcolor="#FFFFFF" cellpadding="0" align="center" style="margin:0 auto;"><tr><td>
 
 						<!-- Main Content -->
-						<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" style="margin:0 auto;" width="570">
+						<table align="center" bgcolor="#FFFFFF" border="0" cellpadding="0" cellspacing="0" style="margin:0 auto;" width="500">
 
 							<!-- Spacer -->				
 							<tr><td height="35">&nbsp;</td></tr>
 
 							<!-- Intro Copy -->
 							<tr><td align="center">
-								<p style="color:#474747; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:48px; font-weight:300; line-height:55px; margin-bottom:0.3em; margin-top:0; text-align:center;">
-									Thanks so much for requesting a copy of our '. $post_name .' pdf.
+								<p style="color:#474747; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:40px; font-weight:300; line-height:50px; margin-bottom:0; margin-top:0; text-align:center;">
+									You\'re only one click away!
 								</p>
 								
-								<p style="color:#666666; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:22px; font-weight:300; line-height:30px; margin-bottom:2em; margin-top:0; text-align:center;">
-									Please download your copy at the link below.
+								<p style="color:#666666; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:22px; font-weight:300; line-height:30px; margin-bottom:1.5em; margin-top:0; text-align:center;">
+									Thanks for requesting a copy of our \''. $post_name .'\' printable PDF.
+								</p>
+																
+								<p style="color:#666666; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:18px; font-weight:300; line-height:26px; margin-bottom:1em; margin-top:0; text-align:center;">
+									Click the link below to download.
 								</p>
 										
 								<p style="color:#FFFFFF; font-family:\'Helvetica Neue\', helvetica, arial, sans-serif; font-size:20px; font-weight:300; line-height:30px; margin-bottom:0; margin-top:0; text-align:center;">
-									<a href="'.$pdf_url.'?utm_source=js-post-pdf-request&utm_medium=email&utm_content=button+-+download+the+pdf+here&utm_campaign=justsell+post+pdf+request" style="background-color:#1A80D3; border:2px solid #1A80D3; color:#FFFFFF; display:inline-block; padding:0.5em 1.5em; text-decoration:none;">Download the PDF here</a>
+									<a href="'.$pdf_url.'" style="background-color:#1A80D3; border:2px solid #1A80D3; color:#FFFFFF; display:inline-block; padding:0.5em 1.5em; text-decoration:none;">Download the PDF</a>
 								</p>
 							</td></tr>
 
@@ -408,12 +423,8 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 								</p>
 
 								<p style="color:#656565; font-family:helvetica, arial, sans-serif; font-size:14px; line-height:22px; margin-bottom:1.5em; margin-top:0; text-align:center;">
-									&copy; by Give More Media Inc. &nbsp;|&nbsp; <a href="http://www.givemore.com/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+givemore&utm_campaign=justsell+post+pdf+request" style="color:#656565;">www.GiveMore.com</a><br />
+									&copy; by Give More Media Inc. &nbsp;|&nbsp; <a href="http://www.justsell.com/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+justsell&utm_campaign=justsell+post+pdf+request" style="color:#656565;">www.JustSell.com</a><br />
 									115 South 15th Street, Suite 502, Richmond, VA 23219
-								</p>
-
-								<p style="color:#656565; font-family:helvetica, arial, sans-serif; font-size:12px; line-height:20px; margin-bottom:1.5em; margin-top:0; text-align:center;">
-									Please use these links to make any updates ... <a href="http://www.givemore.com/blog/subscribe/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+subscribe&utm_campaign=justsell+post+pdf+request" style="color:#656565;">Subscribe</a> &nbsp;|&nbsp; <a href="#[UNSUB_LINK]#" style="color:#656565;">Unsubscribe</a> &nbsp;|&nbsp; <a href="#[UNSUB_LINK]#" style="color:#656565;">Change preferences</a>
 								</p>
 							</td></tr>
 						</table> <!-- END Real People, Copyright Footer -->
@@ -429,19 +440,101 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 		/* [ Create TXT Version (purposely not indented) ] */
 		->addPart('
 
-Thanks for requesting a copy of our '. $post_name .' pdf!
+You\'re only one click away!
+
+Thanks for requesting a copy of our '. $post_name .' printable PDF.
 
 --
 Download the PDF
 '. $pdf_url .'
 --
 
-Remember, we\'re here to make good things happen for other people. We do that, it all works.
+-------------
 
-If you need anything at all, please call us in Richmond, Virginia at 1-866-952-4483, chat with us on our website (http://www.JustSell.com), or email us at JustSell@JustSell.com. We\'d love to talk with you (really).
+Ideas to motivate people...
 
-Smovingly,
-The JustSell.com Team
+Inspire a little extra effort and attention. 212 the extra degree
+http://www.givemore.com/212-the-extra-degree/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+212+the+extra+degree&utm_campaign=justsell+post+pdf+request
+
+Encourage better attitudes and service. Smile & Move
+http://www.givemore.com/smile-and-move/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+smile+and+move&utm_campaign=justsell+post+pdf+request
+
+Inspire commitment, effort, and resilience. Cross The Line
+http://www.givemore.com/cross-the-line/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+cross+the+line&utm_campaign=justsell+post+pdf+request
+
+Encourage more trust and accountability. Love Your People
+http://www.givemore.com/love-your-people/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+love+your+people&utm_campaign=justsell+post+pdf+request
+
+No fluff. No parables. No matrixes. Just truth. Lead [simply]
+http://www.givemore.com/lead-simply/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+lead+simply&utm_campaign=justsell+post+pdf+request
+
+-------------
+
+
+Need a speaker for your next event?
+Sam\'s thoughts and ideas have inspired thousands of people. He\'s the guy behind this stuff. Maybe he can help your organization.
+
+
+Click below to learn about Sam or call (866) 952-4483
+http://www.givemore.com/speaking/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+learn+about+sam&utm_campaign=justsell+post+pdf+request
+
+
+-------------
+
+
+Upcoming meeting, project, or event?
+
+Our fresh no-fluff messages, handouts, and themes can help you kick it off or support it by making it more interesting and meaningful.
+
+------
+Books
+http://www.givemore.com/books-and-booklets/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+books&utm_campaign=justsell+post+pdf+request
+
+------
+Videos
+http://www.givemore.com/videos/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+videos&utm_campaign=justsell+post+pdf+request
+
+------
+Meeting Packages
+http://www.givemore.com/meetings-discussions/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+meeting+packages&utm_campaign=justsell+post+pdf+request
+
+------
+PowerPoint(R) Slides
+http://www.givemore.com/presentations/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+powerpoint+slides&utm_campaign=justsell+post+pdf+request
+
+------
+Pocket Cards
+http://www.givemore.com/category/pocket-cards/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+pocket+cards&utm_campaign=justsell+post+pdf+request
+
+------
+Wristbands
+http://www.givemore.com/category/wristbands/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+wristbands&utm_campaign=justsell+post+pdf+request
+
+------
+Posters & Banners
+http://www.givemore.com/category/posters-and-prints/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+posters+and+banners&utm_campaign=justsell+post+pdf+request
+
+------
+Gifts & Gear
+http://www.givemore.com/gear/?utm_source=js-post-pdf-request&utm_medium=email&utm_content=footer+-+gifts+and+gear&utm_campaign=justsell+post+pdf+request
+
+
+-------------
+
+Connect with us:
+------
+
+Facebook: https://www.facebook.com/nogomos
+
+Twitter: https://twitter.com/give_more
+
+Google+: https://plus.google.com/114883118757655241133/
+
+LinkedIn: http://www.linkedin.com/company/givemore-com
+
+Instagram: http://instagram.com/givemoreenjoymore
+
+Pinterest: http://www.pinterest.com/givemoremedia/
 
 -------------
 We\'re real people here and we\'d love to help you. Really.
@@ -459,10 +552,16 @@ We\'re real people here and we\'d love to help you. Really.
 	/* [ If the email was sent display thank you message and capture email ] */
 	if($sent){
 
-		/* [ Calls the capture email function ] */
-		process_capture($captured_email, null, 'post-pdf-request'); /* process_capture is in global functions file */
+		/* process_capture arguments: $captured_email, $captured_name, $capture_type, $capture_id */
+		/* process_capture is in global functions file */
+		process_capture($pdf_request_email, null, 'js-post-pdf-request', null);
 
-		return "<h2>Congrats, you just got motivated to the nth degree. Check your inbox! The pdf for $post_name have just arrived!</h2>";
+		return '
+			<section class="post-pdf-request">
+				<h3 class="title">Please check your inbox.</h3>
+				<p class="subtitle">The printable PDF is on its way.</p>
+			</section>
+		';
 		
 	} else {
 	 //	die("Sorry but the email could not be sent. Please go back and try again!");
