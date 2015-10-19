@@ -8,12 +8,12 @@
 Plugin Name: Post PDF Request
 Description: Uses the shortcode [postpdfrequest]
 Author: Joe Gilbert
-Version: 0.5
+Version: 1.0
 */
 
 
 /* Pull in the generic global functions needed for this script. */
-require_once('/var/www/html/justsell.com/wp-content/themes/justsell/resources/includes/global-functions.php');
+require_once('/var/www/html/justsell/wp-content/themes/justsell/resources/includes/global-functions.php');
 
 
 /*
@@ -26,7 +26,7 @@ function display_post_pdf_resquest_form()
 
 	/* Build the form and set it to the form_string variable. */
 	$form_output_string = '
-		<section class="post-pdf-request">
+		<section class="post-pdf-request" id="post-pdf-request-form">
 			<div class="post-pdf-request-form-container">
 				<h3 class="title">Make yourself (and the people around you) better.</h3>
 				<p class="subtitle">Get a PDF version of this content to print out or share.</p>
@@ -68,7 +68,7 @@ function process_post_pdf_resquest_form()
 	$pdf_request_email = isset($_POST["postPdfRequestEmail"]) ? $_POST["postPdfRequestEmail"] : '';
 	$post_id = get_the_ID();
 	$pdf_url = '';
-	$server_pdf_directory = 'http://dev.justsell.com/wp-content/themes/justsell/resources/pdfs/in-post/monthly-calendars/';
+	$server_pdf_directory = 'https://www.justsell.com/wp-content/themes/justsell/resources/pdfs/in-post/';
 
 	/* Clean email address */
 	if(strlen($pdf_request_email) <= 0){
@@ -97,8 +97,32 @@ function process_post_pdf_resquest_form()
 	{
 		switch($post_id):
 		
-			case 5:
-				$pdf_url = $server_pdf_directory . '2015-december.pdf';
+			case 12:
+				$pdf_url = $server_pdf_directory . 'sales-process-defined.pdf';
+				break;
+
+			case 14:
+				$pdf_url = $server_pdf_directory . 'the-8-objections.pdf';
+				break;
+
+			case 16:
+				$pdf_url = $server_pdf_directory . 'opening-statements.pdf';
+				break;
+
+			case 18:
+				$pdf_url = $server_pdf_directory . 'sales-interview-questions.pdf';
+				break;
+
+			case 20:
+				$pdf_url = $server_pdf_directory . 'how-to-focus.pdf';
+				break;
+
+			case 22:
+				$pdf_url = $server_pdf_directory . 'sales-management-checklist.pdf';
+				break;
+
+			case 24:
+				$pdf_url = $server_pdf_directory . 'top-30-open-ended-questions.pdf';
 				break;
 
 			default:
@@ -126,7 +150,8 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 	$subject_line = $post_name . ' from JustSell.com';
 
 	/* [ Imports the necessary scripts to control MIME being sent. Use 'find . -name swift_required.php' to find location via ssh ] */
-	require_once '/etc/apache2/sites-available/vendor/swiftmailer/swiftmailer/lib/swift_required.php';
+// Test Server require_once '/etc/apache2/sites-available/vendor/swiftmailer/swiftmailer/lib/swift_required.php';
+		require_once '/usr/share/pear/swift_required.php';
 	
 	/* [ Sets the transport method to PHP Mail ] */
 	$transport = Swift_MailTransport::newInstance();
@@ -166,13 +191,9 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 							<tr><td height="35">&nbsp;</td></tr>
 
 							<!-- Intro Copy -->
-							<tr><td align="center">
-								<p style="color:#474747; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:40px; font-weight:300; line-height:50px; margin-bottom:0; margin-top:0; text-align:center;">
-									You\'re only one click away!
-								</p>
-								
-								<p style="color:#666666; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:22px; font-weight:300; line-height:30px; margin-bottom:1.5em; margin-top:0; text-align:center;">
-									Thanks for requesting a copy of our \''. $post_name .'\' printable PDF.
+							<tr><td align="center">							
+								<p style="color:#474747; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:36px; font-weight:300; line-height:45px; margin-bottom:0.5em; margin-top:0; text-align:center;">
+									Thanks for requesting a copy of our \''. $post_name .'\' printable PDF!
 								</p>
 																
 								<p style="color:#666666; font-family:\'HelveticaNeue-Light\', \'Helvetica Neue Light\', \'Helvetica Neue\', helvetica, arial, sans-serif; font-size:18px; font-weight:300; line-height:26px; margin-bottom:1em; margin-top:0; text-align:center;">
@@ -554,7 +575,7 @@ We\'re real people here and we\'d love to help you. Really.
 
 		/* process_capture arguments: $captured_email, $captured_name, $capture_type, $capture_id */
 		/* process_capture is in global functions file */
-		process_capture($pdf_request_email, null, 'js-post-pdf-request', null);
+		process_capture($pdf_request_email, null, 'post-pdf-request', null);
 
 		return '
 			<section class="post-pdf-request">
