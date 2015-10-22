@@ -19,49 +19,48 @@ require_once('/var/www/html/justsell/wp-content/themes/justsell/resources/includ
 /*
  * Simply returns the pdf request input form when called.
  */
-function display_post_pdf_resquest_form()
+function display_post_pdf_request_form()
 {
 	/* Initialize variables */
-	$post_title_test = get_the_title();
 
 	/* Build the form and set it to the form_string variable. */
 	$form_output_string = '
 		<section class="post-pdf-request" id="post-pdf-request-form">
 			<div class="post-pdf-request-form-container">
-				<h3 class="title">Make yourself (and the people around you) better.</h3>
-				<p class="subtitle">Get a PDF version of this content to print out or share.</p>
+				<h3 class="title">Print it out. Stay inspired.</h3>
+				<p class="subtitle">Get a printable version of this content to post or share.</p>
 				<form action="'. $_SERVER['REQUEST_URI'] .'" method="post" name="pdfFormReqest" class="single-input-form" id="pdf-form-request">
 					<input name="postPdfRequestEmail" type="text" placeholder="Enter your email here">
-					<input name="postPdfRequestSubmit" type="submit" value="Get the PDF">
+					<input name="postPdfRequestSubmit" type="submit" value="Get it now!">
 				</form>
 			</div>
 		</section>
 	';
 
 	return $form_output_string;
-} /* END function display_post_pdf_resquest_form */
+} /* END function display_post_pdf_request_form */
 
 
 /*
  * Either calls the display form function, or the process form function.
  */
-function post_pdf_resquest_control()
+function post_pdf_request_control()
 {
   if ( 'POST' !== $_SERVER['REQUEST_METHOD'] || !isset ($_POST['postPdfRequestSubmit']) )
   {
-		return display_post_pdf_resquest_form();
+		return display_post_pdf_request_form();
   }
   else
   {
-		return process_post_pdf_resquest_form();
+		return process_post_pdf_request_form();
   }
-} /* END function post_pdf_resquest_control */
+} /* END function post_pdf_request_control */
 
 
 /*
  * Processes the form after user submission. It will ultimately either display any errors, or control emailing the pdf.
  */
-function process_post_pdf_resquest_form()
+function process_post_pdf_request_form()
 {
 	/* Initialize variables */
 	$error = array();
@@ -91,7 +90,7 @@ function process_post_pdf_resquest_form()
 			$error_message .= '<p class="form-error">- '.$error[$i].'</p>';
 		}
 
-		return $error_message . display_post_pdf_resquest_form();
+		return $error_message . display_post_pdf_request_form();
 	}
 	else
 	{
@@ -134,7 +133,7 @@ function process_post_pdf_resquest_form()
 		/* Pass all post specific variables to the send_post_pdf function. */
 		return send_post_engagement_pdf($pdf_url, $pdf_request_email);
 	}
-} /* END function process_post_pdf_resquest_form */
+} /* END function process_post_pdf_request_form */
 
 
 
@@ -594,6 +593,6 @@ We\'re real people here and we\'d love to help you. Really.
 
 
 /* Wordpress function call to bind the shortcode '[postpdfrequest]' to the functions above. */
-add_shortcode( 'postpdfrequest', 'post_pdf_resquest_control' );
+add_shortcode( 'postpdfrequest', 'post_pdf_request_control' );
 
 ?>
