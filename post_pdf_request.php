@@ -25,7 +25,7 @@ function display_post_pdf_request_form()
 
 	/* Build the form and set it to the form_string variable. */
 	$form_output_string = '
-		<section class="post-pdf-request" id="post-pdf-request-form">
+		<section class="request-form post-pdf-request" id="post-pdf-request-form">
 			<div class="post-pdf-request-form-container">
 				<h3 class="title">Print it out. Stay inspired.</h3>
 				<p class="subtitle">Get a printable version of this content to post or share.</p>
@@ -460,9 +460,9 @@ function send_post_engagement_pdf($pdf_url, $pdf_request_email)
 		/* [ Create TXT Version (purposely not indented) ] */
 		->addPart('
 
-You\'re only one click away!
+Thanks for requesting a copy of our \''. $post_name .'\' printable PDF!
 
-Thanks for requesting a copy of our '. $post_name .' printable PDF.
+Click the link below to download.
 
 --
 Download the PDF
@@ -578,8 +578,8 @@ We\'re real people here and we\'d love to help you. Really.
 
 		return '
 			<section class="post-pdf-request">
-				<h3 class="title">Please check your inbox.</h3>
-				<p class="subtitle">The printable PDF is on its way.</p>
+				<h3 class="title">Thanks!</h3>
+				<p class="subtitle">We\'re sending it your way now.</p>
 			</section>
 		';
 		
